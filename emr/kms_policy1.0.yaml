@@ -1,0 +1,21 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: IAM Policy
+Resources:
+  KMSPOLICY:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: kms_s3_new
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action: 
+            - 'kms:*'
+            - 's3:PutObject'
+            - 's3:GetObject'
+            - 's3:DeleteObject'
+            Resource: '*'
+      Roles:
+        - DAL-EMR-EMRClusterInstanceProfileRole
+        - DAL-EMR-EMRClusterServiceRole
+    

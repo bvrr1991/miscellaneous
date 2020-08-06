@@ -1,0 +1,29 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "iam:CreateInstanceProfile",
+                "iam:DeleteInstanceProfile",
+                "iam:GetRole",
+                "iam:GetInstanceProfile",
+                "iam:PutRolePermissionsBoundary",
+                "iam:RemoveRoleFromInstanceProfile",
+                "iam:CreateRole",
+                "iam:DeleteRole",
+                "iam:AttachRolePolicy",
+                "iam:PutRolePolicy",
+                "iam:AddRoleToInstanceProfile",
+                "iam:PassRole",
+                "iam:DetachRolePolicy",
+                "iam:DeleteRolePolicy"
+            ],
+            "Resource": [
+                "arn:aws:iam::XXXXXXXXX:role/DAL-EMR*",
+                "arn:aws:iam::XXXXXXXXX:instance-profile/DAL-EMR*"
+            ]
+        }
+    ]
+}

@@ -1,0 +1,7 @@
+Resources:
+  s3bucketcreation:
+    Type: AWS::S3::Bucket
+    Properties: 
+      BucketName: test-ver-venky-2020
+      VersioningConfiguration: 
+        Status: Enabled

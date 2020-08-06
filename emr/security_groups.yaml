@@ -1,0 +1,69 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Security groups for EMR
+Parameters:
+  vpcid:
+    Description: vpcid for  security group  
+    Type: String
+    Default: vpc-03cf7fd26a59d8d49
+
+  cidrip:
+    Description: cidrip range for  security group  
+    Type: String
+    Default: 10.0.0.0/8
+
+
+Resources:  
+  InstanceMasterSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow 22
+      VpcId:
+        Ref: vpcid
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: '22'
+        ToPort: '22'
+        CidrIp: 
+          Ref: cidrip
+
+  InstanceSlaveSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow 22
+      VpcId:
+        Ref: vpcid
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: '22'
+        ToPort: '22'
+        CidrIp: 
+          Ref: cidrip
+  InstanceServiceAccessSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow 22
+      VpcId:
+        Ref: vpcid
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: '22'
+        ToPort: '22'
+        CidrIp: 
+          Ref: cidrip
+
+Outputs:
+  InstanceMasterSecurityGroupId:
+    Description: Security Group 
+    Value: !GetAtt InstanceMasterSecurityGroup.GroupId
+    Export:
+      Name: !Join [":",[!Ref "AWS::StackName","EMRMasterSecurityGroupId::GroupId"]]
+  InstanceSlaveSecurityGroupId:
+    Description: Security Group 
+    Value: !GetAtt InstanceSlaveSecurityGroup.GroupId
+    Export:
+      Name: !Join [":",[!Ref "AWS::StackName","EMRSlaveSecurityGroupId::GroupId"]]
+  InstanceServiceAccessSecurityGroup:
+    Description: Security Group 
+    Value: !GetAtt InstanceServiceAccessSecurityGroup.GroupId
+    Export:
+      Name: !Join [":",[!Ref "AWS::StackName","EMRServiceAccessSecurityGroupId::GroupId"]]

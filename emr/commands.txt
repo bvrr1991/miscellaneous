@@ -1,0 +1,11 @@
+sudo su
+useradd infa_user Welcome123
+useradd infa_user -p Welcome123
+kadmin.local
+addprinc infa_user 
+
+quit
+
+su - infa_user
+
+

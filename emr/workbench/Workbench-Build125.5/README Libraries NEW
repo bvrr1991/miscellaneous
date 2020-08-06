@@ -1,0 +1,9 @@
+=============================================
+!!! Additional libraries need to be moved !!!
+=============================================
+
+Starting with build 124.2 additional libraries are now expected (and searched) in the ext subdirectory.
+
+Additional Libraries in this directory will no longer be included!!
+
+Please move all additional libraries (but not JDBC drivers!) into the "ext" sub-directory

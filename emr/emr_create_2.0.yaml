@@ -1,0 +1,133 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Best Practice EMR Cluster for Spark or S3 backed Hbase
+Parameters:
+  EMRClusterName:
+    Description: Name of the cluster
+    Type: String
+    Default: DAL-EMR-CLUSTER
+  MasterInstanceType:
+    Description: Instance type to be used for the master instance.
+    Type: String
+    Default: m5.2xlarge
+  CoreInstanceType:
+    Description: Instance type to be used for core instances.
+    Type: String
+    Default: m5.2xlarge
+  NumberOfCoreInstances:
+    Description: Must be a valid number
+    Type: Number
+    Default: 2
+  SubnetID:
+    Description: Must be Valid private subnet ID
+    Default: subnet-00ca5219dde2df7ae
+    Type: String
+  LogUri:
+    Description: Must be a valid S3 URL
+    Default: s3://emrclusterlogbucket/
+    Type: String
+  S3DataUri:
+    Description: 'Must be a valid S3 bucket URL '
+    Default: s3://emrclusterdatabucket/
+    Type: String
+  ReleaseLabel:
+    Description: Must be a valid EMR release  version
+    Default: emr-5.20.0
+    Type: String
+  KmsKey:
+    Description: Must be a valid KMS key ARN
+    Default: arn:aws:kms:us-east-1:371666194988:key/c680e9a4-9266-41a8-9675-59edeb5741be
+    Type: String
+
+Resources:
+  EMRSecurityConfiguration:
+    Type: AWS::EMR::SecurityConfiguration
+    Properties:
+      Name: EMRClusterSecurityConfiguration
+      SecurityConfiguration:
+        EncryptionConfiguration:
+          AtRestEncryptionConfiguration:
+            LocalDiskEncryptionConfiguration:
+              EnableEbsEncryption: true
+              AwsKmsKey: 
+                Ref: KmsKey
+              EncryptionKeyProviderType: AwsKms
+            S3EncryptionConfiguration:
+              AwsKmsKey: 
+                Ref: KmsKey
+              EncryptionMode: SSE-KMS
+          EnableAtRestEncryption: true
+          EnableInTransitEncryption: false
+  EMRCluster:
+
+    Type: AWS::EMR::Cluster
+    Properties:
+      Applications:
+
+      - Name: Spark
+      - Name: Hbase
+      - Name: Hive
+      - Name: Oozie
+      - Name: Hue
+      - Name: Presto
+      - Name: Ganglia
+      - Name: JupyterHub
+
+  
+      Configurations:
+      - Classification: hbase-site
+        ConfigurationProperties:
+          hbase.rootdir:
+            Ref: S3DataUri
+      - Classification: hbase
+        ConfigurationProperties:
+          hbase.emr.storageMode: s3
+      Instances:
+        Ec2SubnetId:
+          Ref: SubnetID
+        MasterInstanceGroup:
+          InstanceCount: 1
+          InstanceType:
+            Ref: MasterInstanceType
+          Market: ON_DEMAND
+          Name: Master
+        CoreInstanceGroup:
+          EbsConfiguration:
+            EbsBlockDeviceConfigs:
+            - VolumeSpecification:
+                SizeInGB: '10'
+                VolumeType: gp2
+
+              VolumesPerInstance: '1'
+            EbsOptimized: 'true'
+          InstanceCount:
+            Ref: NumberOfCoreInstances
+          InstanceType:
+            Ref: CoreInstanceType
+          Market: ON_DEMAND
+          Name: Core
+        TerminationProtected: false
+        EmrManagedMasterSecurityGroup: 
+          Fn::ImportValue: DAL-PRIVATE-SECURITY:EMRMasterSecurityGroupId::GroupId
+        EmrManagedSlaveSecurityGroup: 
+          Fn::ImportValue: DAL-PRIVATE-SECURITY:EMRSlaveSecurityGroupId::GroupId
+        ServiceAccessSecurityGroup:
+          Fn::ImportValue: DAL-PRIVATE-SECURITY:EMRServiceAccessSecurityGroupId::GroupId
+
+      VisibleToAllUsers: true
+      JobFlowRole: 
+        arn:aws:iam::371666194988:instance-profile/DAL-EMR-INSTANCEPROFILE-TEST
+        
+      ReleaseLabel:
+        Ref: ReleaseLabel
+      SecurityConfiguration:
+        Ref: EMRSecurityConfiguration
+      LogUri:
+        Ref: LogUri
+      Name:
+        Ref: EMRClusterName
+
+      ServiceRole:
+        arn:aws:iam::371666194988:role/DAL-EMR-EMRClusterServiceRole
+  
+

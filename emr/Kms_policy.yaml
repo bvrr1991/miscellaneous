@@ -1,0 +1,18 @@
+Resources: 
+  KMSEMRClusterinstancepolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: KMSpermissions
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'kms:DescribeKey'
+              - 'kms:GenerateDataKey'
+              - 'kms:Decrypt'
+              - 'kms:Encrypt'
+              - 'Kms:ReEncrypt'
+            Resource: '*'
+      Roles:
+        - DAL-EMR-EMRClusterInstanceProfileRole

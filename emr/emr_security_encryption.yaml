@@ -1,0 +1,33 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Best Practice EMR Security configuration
+Parameters:
+  KmsKey:
+    Description: Arn of KMS key for encryption
+    Type: String
+    Default: arn:aws:kms:us-east-1:371666194988:key/4a47c246-105e-419d-a075-353eed0f984e
+Resources:
+
+  EMRSecurityConfiguration:
+    Type: AWS::EMR::SecurityConfiguration
+    Properties:
+      Name: EMRClusterSecurityConfiguration
+      SecurityConfiguration:
+        EncryptionConfiguration:
+          AtRestEncryptionConfiguration:
+            LocalDiskEncryptionConfiguration:
+              AwsKmsKey: 
+                Ref: KmsKey
+              EncryptionKeyProviderType: AwsKms
+            S3EncryptionConfiguration:
+              AwsKmsKey: 
+                Ref: KmsKey
+              EncryptionMode: SSE-KMS
+          EnableAtRestEncryption: 'true'
+Outputs:
+  EMRSecurityConfigurationArn:
+    Description: Security Encryption 
+    Value: !GetAtt EMRSecurityConfiguration.Arn
+    Export:
+      Name: !Join [":",[!Ref "AWS::StackName","EMRMasterSecurityEncryption::Arn"]]
+    
+    
